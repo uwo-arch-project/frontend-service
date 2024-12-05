@@ -10,8 +10,8 @@ interface DialogProps {
 }
 
 const UpdateDialog: React.FC<DialogProps> = ({ isOpen, onClose, name, image, onSubmit }) => {
-  const [field1, setField1] = useState('');
-  const [field2, setField2] = useState('');
+  const [field1] = useState('');
+  const [field2] = useState('');
   const [field3, setField3] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
