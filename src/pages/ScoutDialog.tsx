@@ -8,7 +8,7 @@ interface DialogProps {
   onSubmit: (formData: { field1: string; field2: string }) => void;
 }
 
-const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, headerTitle, onSubmit }) => {
+const ScoutDialog: React.FC<DialogProps> = ({ isOpen, onClose, headerTitle, onSubmit }) => {
   const [field1, setField1] = useState('');
   const [field2, setField2] = useState('');
 
@@ -72,4 +72,4 @@ const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, headerTitle, onSubmit 
   );
 };
 
-export default Dialog;
+export default ScoutDialog;
