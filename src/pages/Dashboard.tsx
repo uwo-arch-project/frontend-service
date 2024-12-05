@@ -202,9 +202,9 @@ const Dashboard = () => {
     return null;
   }
 
-  const handleRefresh = (deploymentId: number) => {
-    console.log(`Refreshing deployment ${deploymentId}`);
-  };
+  // const handleRefresh = (deploymentId: number) => {
+  //   console.log(`Refreshing deployment ${deploymentId}`);
+  // };
 
   const deleteDeployment = async (deploymentName: string) => {
     try {
@@ -278,7 +278,9 @@ const Dashboard = () => {
             isOpen={isScoutDialogOpen}
             onClose={() => setIsScoutDialogOpen(false)}
             headerTitle="Add a Repository"
-            // onSubmit={}
+            onSubmit={(formData) => {
+              console.log("Form submitted:", formData);
+            }}
           />
           <Button variant="outline" onClick={navigateToTenants}>
             <Users className="w-4 h-4 mr-2" /> Tenant Deployments
@@ -416,12 +418,18 @@ const Dashboard = () => {
                           onClose={() => setIsDeployDialogOpen(false)}
                           repo_scout_id={data.repo_scout_id}
                           image={data.deployments[0].deployment_info.image}
+                          onSubmit={(formData) => {
+                            console.log("Form submitted:", formData);
+                          }}
                         />
                         <UpdateDialog
                           isOpen={isUpdateDialogOpen}
                           onClose={() => setIsUpdateDialogOpen(false)}
                           name={data.deployments[0].deployment_info.deployment_name}
                           image={data.deployments[0].deployment_info.image}
+                          onSubmit={(formData) => {
+                            console.log("Form submitted:", formData);
+                          }}
                         />
                       </div>
                     </td>
