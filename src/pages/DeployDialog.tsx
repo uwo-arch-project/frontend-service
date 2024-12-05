@@ -10,8 +10,9 @@ interface DialogProps {
 }
 
 const DeployDialog: React.FC<DialogProps> = ({ isOpen, onClose, repo_scout_id, image, onSubmit }) => {
-  const [field1, setField1] = useState('');
-  const [field2, setField2] = useState('');
+  const [field1,] = useState('');
+  const [field2,] = useState('');
+
   const [field3, setField3] = useState('');
   const [field4, setField4] = useState('');
 
