@@ -281,6 +281,7 @@ const Dashboard = () => {
             onSubmit={(formData) => {
               console.log("Scouting repository:", formData);
               setIsScoutDialogOpen(false);
+
             }}
           />
           <Button variant="outline" onClick={navigateToTenants}>
@@ -422,6 +423,7 @@ const Dashboard = () => {
                           onSubmit={(formData) => {
                             console.log("Deploying with form data:", formData);
                             setIsDeployDialogOpen(false);
+
                           }}
                         />
                         <UpdateDialog
@@ -432,6 +434,7 @@ const Dashboard = () => {
                           onSubmit={(formData) => {
                             console.log("Updating with form data:", formData);
                             setIsUpdateDialogOpen(false);
+
                           }}
                         />
                       </div>
