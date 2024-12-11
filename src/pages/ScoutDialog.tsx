@@ -5,7 +5,7 @@ interface DialogProps {
   isOpen: boolean;
   headerTitle: string;
   onClose: () => void;
-  onSubmit: (formData: { field1: string; field2: string }) => void;
+  onSubmit: (formData: { github_url: string, docker_base_url: string }) => void;
 }
 
 const ScoutDialog: React.FC<DialogProps> = ({ isOpen, onClose, headerTitle, onSubmit }) => {
@@ -14,7 +14,7 @@ const ScoutDialog: React.FC<DialogProps> = ({ isOpen, onClose, headerTitle, onSu
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ field1, field2 });
+    onSubmit({ github_url: field1, docker_base_url: field2 });
     onClose(); // Close the dialog after submission
   };
 

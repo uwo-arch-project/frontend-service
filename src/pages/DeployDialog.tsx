@@ -4,20 +4,32 @@ import React, { useState } from 'react';
 interface DialogProps {
   isOpen: boolean;
   repo_scout_id: string;
+  name: string;
   image: string;
   onClose: () => void;
-  onSubmit: (formData: { field1: string; field2: string }) => void;
+  onSubmit: (formData: {
+    repo_scout_id: string;
+    container_port: number;
+    image: string;
+    name: string;
+    replicas: number;
+  }) => void;
 }
 
-const DeployDialog: React.FC<DialogProps> = ({ isOpen, onClose, repo_scout_id, image, onSubmit }) => {
-  const [field1, setField1] = useState('');
-  const [field2, setField2] = useState('');
-  const [field3, setField3] = useState('');
-  const [field4, setField4] = useState('');
+const DeployDialog: React.FC<DialogProps> = ({ isOpen, onClose, repo_scout_id, name, image, onSubmit }) => {
+  const [containerPort, setContainerPort] = useState<number>(0);
+  const [replicas, setReplicas] = useState<number>(1);
+  const [deploymentName, setDeploymentName] = useState<string>(name);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ field1, field2 });
+    onSubmit({
+      repo_scout_id,
+      container_port: Number(containerPort),
+      image,
+      name: deploymentName,
+      replicas,
+    });
     onClose(); // Close the dialog after submission
   };
 
@@ -50,7 +62,7 @@ const DeployDialog: React.FC<DialogProps> = ({ isOpen, onClose, repo_scout_id, i
               id="field2"
               value={image}
               readOnly
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 blur-sm"
               required
             />
           </div>
@@ -61,21 +73,28 @@ const DeployDialog: React.FC<DialogProps> = ({ isOpen, onClose, repo_scout_id, i
             <input
               type="text"
               id="field3"
-              value={field3}
-              onChange={(e) => setField3(e.target.value)}
+              value={deploymentName}
+              onChange={(e) => setDeploymentName(e.target.value)}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2" htmlFor="field4">
-              Port Number
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Container Port</label>
             <input
               type="text"
-              id="field4"
-              value={field4}
-              onChange={(e) => setField4(e.target.value)}
+              value={containerPort}
+              onChange={(e) => setContainerPort(Number(e.target.value))}
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Replicas</label>
+            <input
+              type="number"
+              value={replicas}
+              onChange={(e) => setReplicas(Number(e.target.value))}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -84,15 +103,15 @@ const DeployDialog: React.FC<DialogProps> = ({ isOpen, onClose, repo_scout_id, i
             <button
               type="button"
               onClick={onClose}
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
+              className="mr-2 py-2 px-4 bg-gray-500 text-white rounded-md hover:bg-gray-600"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+              className="py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
-              Submit
+              Deploy
             </button>
           </div>
         </form>

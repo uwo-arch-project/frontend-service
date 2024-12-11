@@ -1,6 +1,6 @@
 // src/pages/Dashboard.tsx
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -8,11 +8,13 @@ import ScoutDialog from "./ScoutDialog";
 // import Modal from "react-modal";
 import {
   CheckCircle,
+  AlertCircle,
   XCircle,
   Trash2,
+  ExternalLink,
   Send,
   Edit,
-  Settings,
+  PlusCircle,
   Loader2,
   Plus,
   Users,
@@ -79,6 +81,7 @@ const Dashboard = () => {
   const [isScoutDialogOpen, setIsScoutDialogOpen] = useState(false);
   const [isDeployDialogOpen, setIsDeployDialogOpen] = useState(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [selectedRepo, setSelectedRepo] = useState<RepoInfo | null>(null);
   const [clusterInfo, setClusterInfo] = useState<ClusterInfo | null>(null);
   const [repoInfo, setRepoInfo] = useState<RepoInfo[] | null>(null);
   const [error, setError] = useState<string>("");
@@ -90,7 +93,7 @@ const Dashboard = () => {
         deployment_info: {
           deployment_name: "deployment-service-new2",
           age: "0 minutes ago",
-          status: "Unavailable",
+          status: "Available",
           desired_replicas: 4,
           current_replicas: 4,
           image: "dubemezeagwu/deployment-service:v0.0.8",
@@ -101,7 +104,7 @@ const Dashboard = () => {
               replicas: 1,
             },
           },
-          out_of_sync: false,
+          out_of_sync: true,
         },
       },
     ],
@@ -152,10 +155,6 @@ const Dashboard = () => {
     fetchClusterInfo();
   }, []);
 
-  // useEffect(() => {
-  //   setRepoInfo(() => [services]);
-  // }, [services]);
-
   useEffect(() => {
     const fetchRepoInfo = async () => {
       try {
@@ -202,9 +201,9 @@ const Dashboard = () => {
     return null;
   }
 
-  const handleRefresh = (deploymentId: number) => {
-    console.log(`Refreshing deployment ${deploymentId}`);
-  };
+  // const handleRefresh = (deploymentId: number) => {
+  //   console.log(`Refreshing deployment ${deploymentId}`);
+  // };
 
   const deleteDeployment = async (deploymentName: string) => {
     try {
@@ -225,38 +224,91 @@ const Dashboard = () => {
 
       const result = await response.json();
       console.log(`Deployment ${deploymentName} deleted successfully:`, result);
-
-      // Optionally, update the state to reflect the deletion
-      setRepoInfo((prevRepoInfo) =>
-        prevRepoInfo
-          ? prevRepoInfo.filter(
-              (repo) =>
-                repo.deployments[0].deployment_info.deployment_name !==
-                deploymentName
-            )
-          : null
-      );
+      window.location.reload();
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     }
   };
 
-  const handleSettings = (deploymentId: number) => {
-    console.log(`Opening settings for deployment ${deploymentId}`);
+  const handleDeploy = async (formData: any) => {
+    try {
+      const response = await fetch("http://104.198.50.89/v1/deployments/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          username: "default",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log("Deployment created successfully:", result);
+      window.location.reload();
+    } catch (err) {
+      console.error("Error creating deployment:", err);
+    }
   };
 
-  // const handleScoutRepository = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   console.log("Scouting repository:", newRepo);
-  //   setIsDialogOpen(false);
-  //   setNewRepo({ name: "", url: "", branch: "" });
-  // };
+  const handleScoutRepo = async (formData: any) => {
+    try {
+      const response = await fetch("http://104.198.50.89/v1/build/scout/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          username: "default",
+        },
+        body: JSON.stringify(formData),
+      });
 
-  // const handleScoutRepository = (formData: { field1: string; field2: string }) => {
-  //   console.log("Scouting repository:", formData, newRepo);
-  //   setIsDialogOpen(false);
-  //   setNewRepo({ name: "", url: "", branch: "" });
-  // };
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log("Repo scouted successfully:", result);
+      window.location.reload();
+    } catch (err) {
+      console.error("Error scouting repo:", err);
+    }
+  };
+
+  const handleUpdateReplica = async (formData: any) => {
+    try {
+      const response = await fetch("http://104.198.50.89/v1/deployments/", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          username: "default",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log("Repo updated successfully:", result);
+      window.location.reload();
+    } catch (err) {
+      console.error("Error updating repo:", err);
+    }
+  };
+
+  const handleOpenDeployDialog = (repo: RepoInfo) => {
+    console.log(`selected_repo: ${JSON.stringify(repo)}`);
+    setSelectedRepo(repo);
+    setIsDeployDialogOpen(true);
+  };
+
+  const handleOpenUpdateDialog = (repo: RepoInfo) => {
+    setSelectedRepo(repo);
+    setIsUpdateDialogOpen(true);
+  };
 
   const navigateToTenants = () => {
     router("/tenants-deployments");
@@ -278,7 +330,11 @@ const Dashboard = () => {
             isOpen={isScoutDialogOpen}
             onClose={() => setIsScoutDialogOpen(false)}
             headerTitle="Add a Repository"
-            // onSubmit={}
+            onSubmit={(formData) => {
+              console.log("Scouting repository:", formData);
+              handleScoutRepo(formData);
+              setIsScoutDialogOpen(false);
+            }}
           />
           <Button variant="outline" onClick={navigateToTenants}>
             <Users className="w-4 h-4 mr-2" /> Tenant Deployments
@@ -353,76 +409,96 @@ const Dashboard = () => {
                 {repoInfo?.map((data) => (
                   <tr key={data.repo_scout_id} className="border-b">
                     <td className="p-4">
-                      {data.deployments[0].deployment_info.status ===
-                      "Available" ? (
-                        <CheckCircle className="text-green-500" size={20} />
+                      {data.deployments.length > 0 ? (
+                        data.deployments[0].deployment_info.out_of_sync ? (
+                          <AlertCircle className="text-yellow-500" size={16} />
+                        ) : (
+                          <CheckCircle className="text-green-500" size={16} />
+                        )
                       ) : (
-                        <XCircle className="text-red-500" size={20} />
+                        <XCircle className="text-red-500" size={16} />
                       )}
                     </td>
-                    <td className="p-4">{data.repo_name}</td>
                     <td className="p-4">
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
-                        {data.release_info.releases[0].tag_name}
-                      </span>
+                      <div className="flex items-center">
+                        {data.repo_name || "N/A"}
+                        {data.release_info.repo_url && (
+                          <a
+                            href={data.release_info.repo_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ml-2 text-blue-500"
+                          >
+                            <ExternalLink size={16} />
+                          </a>
+                        )}
+                      </div>
                     </td>
                     <td className="p-4">
-                      {data.deployments[0].deployment_info.available_replicas}/
-                      {data.deployments[0].deployment_info.desired_replicas}
+                      <a
+                        href={data.release_info.releases[0].html_url || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm"
+                      >
+                        {data.release_info.releases[0].tag_name || "N/A"}
+                      </a>
                     </td>
                     <td className="p-4">
-                      {new Date(
-                        data.release_info.releases[0].published_at
-                      ).toLocaleDateString()}
+                      {data.deployments.length > 0 ? (
+                        <>
+                          {
+                            data.deployments[0].deployment_info
+                              .available_replicas
+                          }
+                          /
+                          {data.deployments[0].deployment_info.desired_replicas}
+                        </>
+                      ) : (
+                        "N/A"
+                      )}
+                    </td>
+                    <td className="p-4">
+                      {data.release_info.releases.length > 0
+                        ? new Date(
+                            data.release_info.releases[0].published_at
+                          ).toLocaleDateString()
+                        : "N/A"}
                     </td>
                     <td className="p-4">
                       <div className="flex space-x-2">
-                        {data.deployments[0].deployment_info.status !==
-                          "Available" && (
-                          <button
-                            onClick={() => setIsDeployDialogOpen(true)}
+                        {data.deployments.length === 0 ? (
+                          <Button
+                          variant={"outline"}
+                            onClick={() => handleOpenDeployDialog(data)}
                             className="p-2 hover:bg-green-100 rounded-full text-green-500"
                           >
-                            <Send size={16} />
-                          </button>
-                        )}
-                        <button
-                          onClick={() =>
-                            setIsUpdateDialogOpen(true)
-                          }
-                          className="p-2 hover:bg-gray-100 rounded-full"
-                        >
-                          <Edit size={16} />
-                        </button>
-                        {data.deployments[0].deployment_info.status ==
-                          "Available" && (
-                            <button
-                            onClick={() => deleteDeployment(data.deployments[0].deployment_info.deployment_name)}
-                            className="p-2 hover:bg-gray-100 rounded-full text-red-500"
+                            Create Deployment
+                          </Button>
+                        ) : (
+                          <Button
+                          variant={"outline"}
+                            onClick={() => handleOpenUpdateDialog(data)}
+                            className="p-2 hover:bg-gray-100 rounded-full"
                           >
-                            <Trash2 size={16} />
-                          </button>
+                            Edit Deployment
+                          </Button>
                         )}
-                        <button
-                          onClick={() =>
-                            handleSettings(parseInt(data.repo_scout_id))
-                          }
-                          className="p-2 hover:bg-gray-100 rounded-full"
-                        >
-                          <Settings size={16} />
-                        </button>
-                        <DeployDialog
-                          isOpen={isDeployDialogOpen}
-                          onClose={() => setIsDeployDialogOpen(false)}
-                          repo_scout_id={data.repo_scout_id}
-                          image={data.deployments[0].deployment_info.image}
-                        />
-                        <UpdateDialog
-                          isOpen={isUpdateDialogOpen}
-                          onClose={() => setIsUpdateDialogOpen(false)}
-                          name={data.deployments[0].deployment_info.deployment_name}
-                          image={data.deployments[0].deployment_info.image}
-                        />
+
+                        {data.deployments.length > 0 && (
+                          <Button
+                            variant="outline"
+                            onClick={() =>
+                              deleteDeployment(
+                                data.deployments[0].deployment_info
+                                  .deployment_name
+                              )
+                            }
+                            className="p-2 hover:bg-red-100 rounded-full text-red-500"
+                          >
+                            Delete Deployment
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -432,6 +508,38 @@ const Dashboard = () => {
           </div>
         </CardContent>
       </Card>
+      {selectedRepo && (
+        <>
+          <DeployDialog
+            isOpen={isDeployDialogOpen}
+            onClose={() => setIsDeployDialogOpen(false)}
+            repo_scout_id={selectedRepo.repo_scout_id}
+            image={selectedRepo.latest_image_url || "N/A"}
+            name={""}
+            onSubmit={(formData) => {
+              console.log("Deploying with form data:", formData);
+              handleDeploy(formData);
+              setIsDeployDialogOpen(false);
+            }}
+          />
+          {selectedRepo.deployments && selectedRepo.deployments.length > 0 && (
+            <UpdateDialog
+              isOpen={isUpdateDialogOpen}
+              onClose={() => setIsUpdateDialogOpen(false)}
+              name={
+                selectedRepo.deployments[0]?.deployment_info?.deployment_name ||
+                ""
+              }
+              image={selectedRepo.deployments[0]?.deployment_info?.image || ""}
+              onSubmit={(formData) => {
+                console.log("Updating with form data:", formData);
+                handleUpdateReplica(formData);
+                setIsUpdateDialogOpen(false);
+              }}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 };
