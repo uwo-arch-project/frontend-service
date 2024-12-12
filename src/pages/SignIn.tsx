@@ -10,14 +10,15 @@ const SignIn: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    console.log("Button clicked");
+
     // Example API call (replace with actual API)
-    const response = await fetch('http://localhost:8080/v2/auth/login', {
-      method: 'POST',
+    const response = await fetch('http://104.198.50.89/v1/deployments/tenant/', {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'username': email,
       },
-      body: JSON.stringify({ email, password }),
     });
 
     if (response.ok) {
@@ -39,14 +40,14 @@ const SignIn: React.FC = () => {
         
         <form onSubmit={handleLogin}>
           <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium">Email</label>
+            <label htmlFor="email" className="block text-sm font-medium">Username</label>
             <input
-              type="email"
+              type="name"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="mt-2 w-full p-2 border border-gray-300 rounded-md"
-              placeholder="Enter your email"
+              placeholder="Enter your username"
               required
             />
           </div>

@@ -86,6 +86,7 @@ const Dashboard = () => {
   const [repoInfo, setRepoInfo] = useState<RepoInfo[] | null>(null);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  const token = localStorage.getItem("token");
 
   const services = {
     deployments: [
@@ -134,7 +135,7 @@ const Dashboard = () => {
           {
             method: "GET",
             headers: {
-              username: "default",
+              username: token || "",
               Origin: "http://localhost:5173",
             },
           }
