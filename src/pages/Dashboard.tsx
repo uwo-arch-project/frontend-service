@@ -13,6 +13,7 @@ import {
   XCircle,
   ExternalLink,
   Loader2,
+  Send,
   Plus,
   LogOut,
   Users,
@@ -20,7 +21,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import DeployDialog from "./DeployDialog";
 import UpdateDialog from "./UpdateDialog";
-import Tooltip from '@mui/material/Tooltip';
+import Tooltip from "@mui/material/Tooltip";
 
 interface ClusterInfo {
   kubernetes_version: string;
@@ -237,6 +238,7 @@ const Dashboard = () => {
         method: "POST",
         headers: {
           username: token || "",
+          "Content-Type": "application/json",
           Origin: "http://localhost:5173",
         },
         body: JSON.stringify(formData),
@@ -260,6 +262,7 @@ const Dashboard = () => {
         method: "POST",
         headers: {
           username: token || "",
+          "Content-Type": "application/json",
           Origin: "http://localhost:5173",
         },
         body: JSON.stringify(formData),
@@ -318,7 +321,7 @@ const Dashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     router("/");
-  }
+  };
   return (
     <div className="p-6 space-y-6">
       {/* Header with Actions */}
@@ -326,10 +329,9 @@ const Dashboard = () => {
         <h1 className="text-2xl font-bold">Infrastructure Dashboard</h1>
         <div className="flex items-center space-x-4">
           <Button
-            onClick={() => setIsScoutDialogOpen(true)}
             className="bg-blue-600 hover:bg-blue-700"
           >
-            <Plus className="w-4 h-4 mr-2" /> Scout Repository
+            <Users className="w-4 h-4 mr-2" /> AirBnB-dev
           </Button>
           <ScoutDialog
             isOpen={isScoutDialogOpen}
@@ -342,7 +344,7 @@ const Dashboard = () => {
             }}
           />
           <Button variant="outline" onClick={navigateToTenants}>
-            <Users className="w-4 h-4 mr-2" /> Tenant Deployments
+            <Send className="w-4 h-4 mr-2" /> Tenant Deployments
           </Button>
           <Button variant="outline" onClick={handleLogout}>
             <LogOut className="w-4 h-4 mr-2" /> Logout
@@ -398,7 +400,15 @@ const Dashboard = () => {
       {/* Deployments Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Current Scouted Repositories</CardTitle>
+          <div className="flex justify-between items-center">
+            <CardTitle>Current Scouted Repositories</CardTitle>
+            <Button
+              onClick={() => setIsScoutDialogOpen(true)}
+              className="bg-green-300 hover:bg-green-400"
+            >
+              <Plus className="w-4 h-4 mr-2" /> Scout Repository
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -417,33 +427,33 @@ const Dashboard = () => {
                 {repoInfo?.map((data) => (
                   <tr key={data.repo_scout_id} className="border-b">
                     <td className="p-4">
-                    {data.deployments.length > 0 ? (
-                  data.deployments[0].deployment_info.out_of_sync ? (
-                    <Tooltip title="Out of Sync">
-                      <AlertCircle
-                      className="text-yellow-500"
-                      size={16}
-                      data-tooltip="Out of Sync"
-                    />
-                    </Tooltip>
-                  ) : (
-                    <Tooltip title="In Sync">
-                      <CheckCircle
-                        className="text-green-500"
-                        size={16}
-                        data-tooltip="In Sync"
-                      />
-                    </Tooltip>
-                  )
-                ) : (
-                  <Tooltip title="Unavailable">
-                    <XCircle
-                    className="text-red-500"
-                    size={16}
-                    data-tool-tip="Unavailable"
-                  />
-                  </Tooltip>
-                )}
+                      {data.deployments.length > 0 ? (
+                        data.deployments[0].deployment_info.out_of_sync ? (
+                          <Tooltip title="Out of Sync">
+                            <AlertCircle
+                              className="text-yellow-500"
+                              size={16}
+                              data-tooltip="Out of Sync"
+                            />
+                          </Tooltip>
+                        ) : (
+                          <Tooltip title="In Sync">
+                            <CheckCircle
+                              className="text-green-500"
+                              size={16}
+                              data-tooltip="In Sync"
+                            />
+                          </Tooltip>
+                        )
+                      ) : (
+                        <Tooltip title="Unavailable">
+                          <XCircle
+                            className="text-red-500"
+                            size={16}
+                            data-tool-tip="Unavailable"
+                          />
+                        </Tooltip>
+                      )}
                     </td>
                     <td className="p-4">
                       <div className="flex items-center">
@@ -495,7 +505,7 @@ const Dashboard = () => {
                       <div className="flex space-x-2">
                         {data.deployments.length === 0 ? (
                           <Button
-                          variant={"outline"}
+                            variant={"outline"}
                             onClick={() => handleOpenDeployDialog(data)}
                             className="p-2 hover:bg-green-100 rounded-full text-green-500"
                           >
@@ -503,7 +513,7 @@ const Dashboard = () => {
                           </Button>
                         ) : (
                           <Button
-                          variant={"outline"}
+                            variant={"outline"}
                             onClick={() => handleOpenUpdateDialog(data)}
                             className="p-2 hover:bg-gray-100 rounded-full"
                           >
