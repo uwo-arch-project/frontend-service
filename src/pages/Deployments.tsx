@@ -47,10 +47,11 @@ const TenantDeployments = () => {
 
         const data = await response.json();
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const transformedData = Object.values(data).map((item: any) => ({
           id: item.deployment_info.id,
           name: item.deployment_info.name,
-          replicas: `${item.kubernetes_resp.available_replicas}/${item.kubernetes_resp.desired_replicas}`,
+          replicas: item.kubernetes_resp.available_replicas,
           manifest: item.kubernetes_resp.other_info.endpoint,
           image: item.deployment_info.image,
           status:
@@ -62,7 +63,11 @@ const TenantDeployments = () => {
 
         setTenants(transformedData);
       } catch (err) {
-        setError(err.message);
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unknown error occurred");
+        }
       } finally {
         setLoading(false);
       }
@@ -100,7 +105,7 @@ const TenantDeployments = () => {
     setSelectedTenant(tenant);
     setFormData({
       name: tenant.name,
-      replicas: parseInt(tenant.replicas.split("/")[0]),
+      replicas: tenant.replicas,
       image: tenant.image,
     });
     setIsEditDialogOpen(true);

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/pages/Dashboard.tsx
 
 import { useState, useEffect } from "react";
