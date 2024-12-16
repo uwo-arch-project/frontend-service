@@ -507,7 +507,7 @@ const Dashboard = () => {
                             onClick={() => handleOpenUpdateDialog(data)}
                             className="p-2 hover:bg-gray-100 rounded-full"
                           >
-                            Edit Deployment
+                            Sync
                           </Button>
                         )}
 
@@ -556,7 +556,7 @@ const Dashboard = () => {
                 selectedRepo.deployments[0]?.deployment_info?.deployment_name ||
                 ""
               }
-              image={selectedRepo.deployments[0]?.deployment_info?.image || ""}
+              image={selectedRepo.latest_image_url || ""}
               onSubmit={(formData) => {
                 console.log("Updating with form data:", formData);
                 handleUpdateReplica(formData);
