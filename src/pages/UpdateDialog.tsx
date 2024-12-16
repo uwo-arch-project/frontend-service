@@ -41,6 +41,7 @@ const UpdateDialog: React.FC<DialogProps> = ({ isOpen, onClose, name, image, onS
               onChange={(e) => setDeploymentName(e.target.value)}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
+              disabled
             />
           </div>
           <div className="mb-4">
@@ -67,6 +68,7 @@ const UpdateDialog: React.FC<DialogProps> = ({ isOpen, onClose, name, image, onS
               onChange={(e) => setDeploymentImage(e.target.value)}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
+              disabled
             />
           </div>
           <div className="flex justify-end">

@@ -181,14 +181,19 @@ const TenantDeployments = () => {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">
-          <Button variant="outline" onClick={() => router("/")}>
+          <Button variant="outline" onClick={() => router("/dashboard")}>
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
           </Button>
           <h1 className="text-2xl font-bold">Tenant Deployments</h1>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {tenants.length === 0 ? (
+        <div className="flex items-center justify-center h-full">
+        <p className="text-xl">No deployments</p>
+      </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tenants.map((tenant) => (
           <Card key={tenant.id}>
             <CardHeader>
@@ -248,6 +253,7 @@ const TenantDeployments = () => {
           </Card>
         ))}
       </div>
+      )}
 
       {isEditDialogOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

@@ -10,18 +10,16 @@ import {
   CheckCircle,
   AlertCircle,
   XCircle,
-  Trash2,
   ExternalLink,
-  Send,
-  Edit,
-  PlusCircle,
   Loader2,
   Plus,
+  LogOut,
   Users,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import DeployDialog from "./DeployDialog";
 import UpdateDialog from "./UpdateDialog";
+import Tooltip from '@mui/material/Tooltip';
 
 interface ClusterInfo {
   kubernetes_version: string;
@@ -160,10 +158,11 @@ const Dashboard = () => {
     const fetchRepoInfo = async () => {
       try {
         // Replace with your actual API endpoint
+        console.log(`token: ${token}`);
         const response = await fetch("http://104.198.50.89/v1/build/scout/", {
           method: "GET",
           headers: {
-            username: "default",
+            username: token || "",
             Origin: "http://localhost:5173",
           },
         });
@@ -213,8 +212,8 @@ const Dashboard = () => {
         {
           method: "DELETE",
           headers: {
-            "Content-Type": "application/json",
-            username: "default",
+            username: token || "",
+            Origin: "http://localhost:5173",
           },
         }
       );
@@ -236,8 +235,8 @@ const Dashboard = () => {
       const response = await fetch("http://104.198.50.89/v1/deployments/", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          username: "default",
+          username: token || "",
+          Origin: "http://localhost:5173",
         },
         body: JSON.stringify(formData),
       });
@@ -259,8 +258,8 @@ const Dashboard = () => {
       const response = await fetch("http://104.198.50.89/v1/build/scout/", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          username: "default",
+          username: token || "",
+          Origin: "http://localhost:5173",
         },
         body: JSON.stringify(formData),
       });
@@ -282,8 +281,8 @@ const Dashboard = () => {
       const response = await fetch("http://104.198.50.89/v1/deployments/", {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
-          username: "default",
+          username: token || "",
+          Origin: "http://localhost:5173",
         },
         body: JSON.stringify(formData),
       });
@@ -315,6 +314,10 @@ const Dashboard = () => {
     router("/tenants-deployments");
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router("/");
+  }
   return (
     <div className="p-6 space-y-6">
       {/* Header with Actions */}
@@ -339,6 +342,9 @@ const Dashboard = () => {
           />
           <Button variant="outline" onClick={navigateToTenants}>
             <Users className="w-4 h-4 mr-2" /> Tenant Deployments
+          </Button>
+          <Button variant="outline" onClick={handleLogout}>
+            <LogOut className="w-4 h-4 mr-2" /> Logout
           </Button>
         </div>
       </div>
@@ -410,15 +416,33 @@ const Dashboard = () => {
                 {repoInfo?.map((data) => (
                   <tr key={data.repo_scout_id} className="border-b">
                     <td className="p-4">
-                      {data.deployments.length > 0 ? (
-                        data.deployments[0].deployment_info.out_of_sync ? (
-                          <AlertCircle className="text-yellow-500" size={16} />
-                        ) : (
-                          <CheckCircle className="text-green-500" size={16} />
-                        )
-                      ) : (
-                        <XCircle className="text-red-500" size={16} />
-                      )}
+                    {data.deployments.length > 0 ? (
+                  data.deployments[0].deployment_info.out_of_sync ? (
+                    <Tooltip title="Out of Sync">
+                      <AlertCircle
+                      className="text-yellow-500"
+                      size={16}
+                      data-tooltip="Out of Sync"
+                    />
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title="In Sync">
+                      <CheckCircle
+                        className="text-green-500"
+                        size={16}
+                        data-tooltip="In Sync"
+                      />
+                    </Tooltip>
+                  )
+                ) : (
+                  <Tooltip title="Unavailable">
+                    <XCircle
+                    className="text-red-500"
+                    size={16}
+                    data-tool-tip="Unavailable"
+                  />
+                  </Tooltip>
+                )}
                     </td>
                     <td className="p-4">
                       <div className="flex items-center">
