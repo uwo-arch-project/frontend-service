@@ -88,43 +88,43 @@ const Dashboard = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const token = localStorage.getItem("token");
 
-  const services = {
-    deployments: [
-      {
-        deployment_info: {
-          deployment_name: "deployment-service-new2",
-          age: "0 minutes ago",
-          status: "Available",
-          desired_replicas: 4,
-          current_replicas: 4,
-          image: "dubemezeagwu/deployment-service:v0.0.8",
-          available_replicas: 2,
-          other_info: {
-            endpoint: "UNDEFINED",
-            kuberenetes_spec: {
-              replicas: 1,
-            },
-          },
-          out_of_sync: true,
-        },
-      },
-    ],
-    latest_image_url: "dubemezeagwu/deployment-service:v0.0.8",
-    release_info: {
-      repo_url: "https://github.com/vignesh-codes/deployment-service",
-      releases: [
-        {
-          html_url:
-            "https://github.com/vignesh-codes/deployment-service/releases/tag/v0.0.8",
-          tag_name: "v0.0.6",
-          created_at: "2024-11-17T01:55:26Z",
-          published_at: "2024-11-20T00:22:07Z",
-        },
-      ],
-    },
-    repo_name: "vignesh-codes/test-service",
-    repo_scout_id: "6733ef6ce131df206b1c199lp",
-  };
+  // const services = {
+  //   deployments: [
+  //     {
+  //       deployment_info: {
+  //         deployment_name: "deployment-service-new2",
+  //         age: "0 minutes ago",
+  //         status: "Available",
+  //         desired_replicas: 4,
+  //         current_replicas: 4,
+  //         image: "dubemezeagwu/deployment-service:v0.0.8",
+  //         available_replicas: 2,
+  //         other_info: {
+  //           endpoint: "UNDEFINED",
+  //           kuberenetes_spec: {
+  //             replicas: 1,
+  //           },
+  //         },
+  //         out_of_sync: true,
+  //       },
+  //     },
+  //   ],
+  //   latest_image_url: "dubemezeagwu/deployment-service:v0.0.8",
+  //   release_info: {
+  //     repo_url: "https://github.com/vignesh-codes/deployment-service",
+  //     releases: [
+  //       {
+  //         html_url:
+  //           "https://github.com/vignesh-codes/deployment-service/releases/tag/v0.0.8",
+  //         tag_name: "v0.0.6",
+  //         created_at: "2024-11-17T01:55:26Z",
+  //         published_at: "2024-11-20T00:22:07Z",
+  //       },
+  //     ],
+  //   },
+  //   repo_name: "vignesh-codes/test-service",
+  //   repo_scout_id: "6733ef6ce131df206b1c199lp",
+  // };
 
   useEffect(() => {
     const fetchClusterInfo = async () => {
@@ -172,7 +172,7 @@ const Dashboard = () => {
           throw new Error("Failed to fetch repo information");
         }
         const data = await response.json();
-        const combinedData = [...data, services];
+        const combinedData = [...data];
         console.log(`data: ${JSON.stringify(data[0])}`);
         setRepoInfo(combinedData);
       } catch (err) {
