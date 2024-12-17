@@ -65,7 +65,7 @@ interface Release {
 
 interface ReleaseInfo {
   repo_url: string;
-  releases: Release[];
+  releases: Release;
 }
 
 interface RepoInfo {
@@ -136,6 +136,7 @@ const Dashboard = () => {
             method: "GET",
             headers: {
               username: token || "",
+              "Content-Type": "application/json",
               Origin: "http://localhost:5173",
             },
           }
@@ -165,6 +166,7 @@ const Dashboard = () => {
           method: "GET",
           headers: {
             username: token || "",
+            "Content-Type": "application/json",
             Origin: "http://localhost:5173",
           },
         });
@@ -215,6 +217,7 @@ const Dashboard = () => {
           method: "DELETE",
           headers: {
             username: token || "",
+            "Content-Type": "application/json",
             Origin: "http://localhost:5173",
           },
         }
@@ -233,6 +236,7 @@ const Dashboard = () => {
   };
 
   const handleDeploy = async (formData: any) => {
+    console.log("form data ", formData, "token is ", token)
     try {
       const response = await fetch("http://104.198.50.89/v1/deployments/", {
         method: "POST",
@@ -286,6 +290,7 @@ const Dashboard = () => {
         method: "PUT",
         headers: {
           username: token || "",
+          "Content-Type": "application/json",
           Origin: "http://localhost:5173",
         },
         body: JSON.stringify(formData),
@@ -329,9 +334,9 @@ const Dashboard = () => {
         <h1 className="text-2xl font-bold">Infrastructure Dashboard</h1>
         <div className="flex items-center space-x-4">
           <Button
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-purple-600 hover:bg-purple-700"
           >
-            <Users className="w-4 h-4 mr-2" /> AirBnB-dev
+            <Users className="w-4 h-4 mr-2" /> {token}
           </Button>
           <ScoutDialog
             isOpen={isScoutDialogOpen}
@@ -472,12 +477,12 @@ const Dashboard = () => {
                     </td>
                     <td className="p-4">
                       <a
-                        href={data.release_info.releases[0].html_url || "#"}
+                        href={data.release_info.releases.html_url || "#"}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm"
                       >
-                        {data.release_info.releases[0].tag_name || "N/A"}
+                        {data.release_info.releases.tag_name || "N/A"}
                       </a>
                     </td>
                     <td className="p-4">
@@ -495,10 +500,10 @@ const Dashboard = () => {
                       )}
                     </td>
                     <td className="p-4">
-                      {data.release_info.releases.length > 0
+                      {data.release_info.releases
                         ? new Date(
-                            data.release_info.releases[0].published_at
-                          ).toLocaleDateString()
+                          data.release_info.releases.published_at
+                        ).toLocaleDateString()
                         : "N/A"}
                     </td>
                     <td className="p-4">
@@ -510,8 +515,9 @@ const Dashboard = () => {
                             className="p-2 hover:bg-green-100 rounded-full text-green-500"
                           >
                             Create Deployment
+
                           </Button>
-                        ) : (
+                        ) : data.deployments[0].deployment_info.out_of_sync ? (
                           <Button
                             variant={"outline"}
                             onClick={() => handleOpenUpdateDialog(data)}
@@ -519,7 +525,13 @@ const Dashboard = () => {
                           >
                             Sync
                           </Button>
-                        )}
+                        ) : <Button
+                        variant={"outline"}
+                        onClick={() => handleOpenUpdateDialog(data)}
+                        className="p-2 hover:bg-gray-100 rounded-full"
+                      >
+                        Update Replicas
+                      </Button>}
 
                         {data.deployments.length > 0 && (
                           <Button

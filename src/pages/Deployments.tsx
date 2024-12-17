@@ -1,8 +1,9 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Edit } from "lucide-react";
+import { ArrowLeft, Edit, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Tooltip from "@mui/material/Tooltip";
 
 const TenantDeployments = () => {
   const router = useNavigate();
@@ -15,7 +16,7 @@ const TenantDeployments = () => {
     null
   );
   const [jsonResponse, setJsonResponse] = React.useState<string>("");
-
+  const token = localStorage.getItem("token");
   const [formData, setFormData] = React.useState({
     name: "",
     replicas: 0,
@@ -39,7 +40,7 @@ const TenantDeployments = () => {
 
       try {
         const response = await fetch("http://104.198.50.89/v1/deployments/", {
-          headers: { username: "default" },
+          headers: { username: token || "default" },
         });
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
@@ -84,7 +85,7 @@ const TenantDeployments = () => {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            username: "default",
+            username: token || "default",
           },
         }
       );
@@ -144,7 +145,7 @@ const TenantDeployments = () => {
         headers: {
           "Content-Type": "application/json",
           Origin: "http://localhost:5173",
-          username: "default",
+          username: token || "default",
         },
         body: JSON.stringify({
           name: formData.name,
@@ -191,6 +192,11 @@ const TenantDeployments = () => {
           </Button>
           <h1 className="text-2xl font-bold">Tenant Deployments</h1>
         </div>
+        <Button
+            className="bg-purple-600 hover:bg-purple-700"
+          >
+            <Users className="w-4 h-4 mr-2" /> {token}
+        </Button>
       </div>
 
       {tenants.length === 0 ? (
@@ -204,11 +210,13 @@ const TenantDeployments = () => {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 {tenant.name}
+                <Tooltip title={tenant.status}>
                 <span
                   className={`inline-block w-3 h-3 rounded-full ${
                     tenant.status === "healthy" ? "bg-green-500" : "bg-red-500"
                   }`}
                 />
+                </Tooltip>
               </CardTitle>
             </CardHeader>
             <CardContent>
