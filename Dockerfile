@@ -1,16 +1,12 @@
-# Stage 1: Build
-FROM node:22 AS builder
+# Development Mode
+FROM node:22
 
-WORKDIR /app
-
-# Copy package files and install dependencies
-COPY . .
-RUN npm install
-
-RUN ls
-# Navigate to the client directory for the build
 WORKDIR /app/client
 
+COPY package*.json ./
+RUN npm install
+
+COPY . .
 
 EXPOSE 5173
 
